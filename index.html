@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مولّد كود QR</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
+    input, button { padding: 10px; margin: 10px 0; width: 90%; max-width: 350px; font-size: 16px; }
+    #qrcode { margin-top: 20px; background: white; display: inline-block; padding: 10px; }
+    .social-buttons { margin-top: 30px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+    .social-button {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+    }
+    .youtube { background-color: #FF0000; }
+    .facebook { background-color: #1877F2; }
+    .twitter { background-color: #000000; }
+    .instagram { background: radial-gradient(circle at 30% 30%, #feda75, #d62976, #962fbf); }
+    .tiktok { background-color: #000000; }
+    .section-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 30px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h2>مولّد كود QR</h2>
+  
+  <input id="text" type="text" placeholder="أدخل الرابط أو النص هنا" />
+  
+  <div class="section-title">  </div>
+  <button onclick="generateQR()">توليد الكود</button>
+  
+  <div id="qrcode"></div>
+
+  <div class="section-title">
+    
+  </div>
+  <button onclick="downloadQR()">تحميل الكود</button>
+  
+  <div class="section-title">        </div>
+  <button onclick="shareQR()">مشاركة الكود</button>
+  
+  <div class="section-title">روابط المواقع الاجتماعية</div>
+  <div class="social-buttons">
+    <button class="social-button youtube" onclick="setSocial('https://youtube.com/')">▶</button>
+    <button class="social-button facebook" onclick="setSocial('https://facebook.com/')">f</button>
+    <button class="social-button twitter" onclick="setSocial('https://twitter.com/')">X</button>
+    <button class="social-button instagram" onclick="setSocial('https://instagram.com/')">I</button>
+    <button class="social-button tiktok" onclick="setSocial('https://tiktok.com/')">T</button>
+  </div>
+
+  <script>
+    function generateQR() {
+      let container = document.getElementById("qrcode");
+      container.innerHTML = "";
+      let text = document.getElementById("text").value.trim();
+      if (text === "") return alert("يرجى إدخال نص أو رابط!");
+      new QRCode(container, {
+        text: text,
+        width: 220,
+        height: 220
+      });
+    }
+
+    function downloadQR() {
+      const qrCanvas = document.querySelector("#qrcode canvas");
+      if (!qrCanvas) return alert("يرجى توليد الكود أولاً!");
+      const imgData = qrCanvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = imgData;
+      link.download = "qrcode.png";
+      link.click();
+    }
+
+    function shareQR() {
+      const qrCanvas = document.querySelector("#qrcode canvas");
+      if (!qrCanvas) return alert("يرجى توليد الكود أولاً!");
+      qrCanvas.toBlob(blob => {
+        const file = new File([blob], "qrcode.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({
+            files: [file],
+            title: "كود QR",
+            text: "تم توليد كود QR، شاركه الآن!",
+          }).catch(err => console.error("المشاركة أُلغيت", err));
+        } else {
+          alert("المشاركة غير مدعومة على هذا الجهاز.");
+        }
+      });
+    }
+
+    function setSocial(url) {
+      document.getElementById("text").value = url;
+      generateQR();
+    }
+  </script>
+</body>
+</html>
